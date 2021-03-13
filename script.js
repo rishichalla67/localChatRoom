@@ -57,7 +57,7 @@
 //   messageContainer.append(messageElement)
 // }
 
-const socket = io('https://rishichalla67.github.io/localChatRoom/')
+const socket = new WebSocket('https://rishichalla67.github.io/localChatRoom/');
 const messageContainer = document.getElementById('message-container')
 const messageForm = document.getElementById('send-container')
 const messageInput = document.getElementById('message-input')
