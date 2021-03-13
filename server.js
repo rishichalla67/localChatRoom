@@ -1,42 +1,37 @@
-const express = require('express')
-const app = express()
-const server = require('http').Server(app)
-const io = require('socket.io')(server, {
-    cors: {
-        origin: "*",
-      },
-});
+// const io = require('socket.io')(3000)
 
-app.set('views', './views')
-app.set('view engine', 'ejs')
-app.use(express.static('public'))
-app.use(express.urlencoded({extended: true}))
+// const users = {}
 
-const rooms = {}
 
-app.get('/', (req, res) => {
-    res.render('index', {rooms: rooms})
-})
+// io.on('connection', socket => {
+//   socket.on('new-user', data => {
+//     users[socket.id] = data.capitalName
+//     socket.broadcast.emit('user-connected', { capitalName: data.capitalName, setBg: data.setBg})
+//   })
+//   socket.on('send-chat-message', data => {
+//     socket.broadcast.emit('chat-message', { message: data.message, capitalName: data.users[socket.id], setBg: data.setBg })
+//   })
+//   socket.on('disconnect', () => {
+//     socket.broadcast.emit('user-disconnected', users[socket.id])
+//     delete users[socket.id]
+//   })
+// })
 
-app.get('/:room', (res, req) => {
-    res.render('room', {roomName: req.params.room})
-})
-
-server.listen(3000)
+  
+const io = require('socket.io')(3000)
 
 const users = {}
 
-// Runs code everytime someone loads site, each user gets a socket and sends message
 io.on('connection', socket => {
-    socket.on('new-user', capitalName => {
-        users[socket.id] = capitalName
-        socket.broadcast.emit('user-connected', capitalName)
-    })
-    socket.on('send-chat-message', message => {
-        socket.broadcast.emit('chat-message', {message: message, name: users[socket.id]})
-    })
-    socket.off('disconnect', () => {
-        socket.broadcast.emit("user-disconnected", users[socket.id])
-        delete users[socket.id]
-    })
+  socket.on('new-user', capitalName => {
+    users[socket.id] = capitalName
+    socket.broadcast.emit('user-connected', capitalName)
+  })
+  socket.on('send-chat-message', message => {
+    socket.broadcast.emit('chat-message', { message: message, capitalName: users[socket.id] })
+  })
+  socket.on('disconnect', () => {
+    socket.broadcast.emit('user-disconnected', users[socket.id])
+    delete users[socket.id]
+  })
 })
